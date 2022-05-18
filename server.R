@@ -104,5 +104,3 @@ shinyServer(function(input, output) {
         theme_void() +
         theme(legend.position = "none")})
 })
-
-
