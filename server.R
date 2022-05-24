@@ -75,7 +75,7 @@ progress <- function(weight, minIdealWeight, maxIdealWeight){
     
     # compute percentage
     data$percentage <- round(data$fraction*100, digits=2)
- 
+    
     
     # Compute the bottom of each rectangle
     data$ymin <- c(0, head(data$ymax, n=-1))
@@ -86,16 +86,19 @@ progress <- function(weight, minIdealWeight, maxIdealWeight){
     # Compute a good label
     data$label <- paste0(data$percentage, "%")
     
+    # colour for the chart
+    colour <- c("#0073C2FF","#EFC000FF")
+    
     # Make the plot
     ggplot(data, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=category)) +
-      geom_rect() +
-      geom_text(x=1, aes(y=labelPosition, label=label, color=category), size=4) + # x here controls label position (inner / outer)
-      scale_fill_brewer(palette=2) +
-      scale_color_brewer(palette=2) +
+      geom_rect() + ggtitle("Progress to achieve ideal weight:")+
+      scale_fill_manual(values=colour) + # chart colour
       coord_polar(theta="y") +
       xlim(c(-4, 4)) +
       theme_void() +
-      theme(legend.position = "none")
+      theme(legend.position = "none")+
+      theme(plot.title = element_text(size=28))+
+      annotate(geom='text', x=-4, y=0.25, size=13, colour="dark green", label=paste0(data$percentage[data$category=="Achieved"],"%"))
     
   }else if (weight > maxIdealWeight){
     progress2 <- abs(((weight-maxIdealWeight)/maxIdealWeight)*100)
@@ -122,16 +125,19 @@ progress <- function(weight, minIdealWeight, maxIdealWeight){
     # Compute a good label
     data$label <- paste0(data$percentage, "%")
     
+    # colour for the chart
+    colour <- c("#0073C2FF","#EFC000FF")
+    
     # Make the plot
     ggplot(data, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=category)) +
-      geom_rect() +
-      geom_text(x=1, aes(y=labelPosition, label=label, color=category), size=4) + # x here controls label position (inner / outer)
-      scale_fill_brewer(palette=2) +
-      scale_color_brewer(palette=2) +
+      geom_rect() + ggtitle("Progress to achieve ideal weight:")+
+      scale_fill_manual(values=colour) + # chart colour
       coord_polar(theta="y") +
       xlim(c(-4, 4)) +
       theme_void() +
-      theme(legend.position = "none")
+      theme(legend.position = "none")+
+      theme(plot.title = element_text(size=28))+
+      annotate(geom='text', x=-4, y=0.25, size=13, colour="dark green", label=paste0(data$percentage[data$category=="Achieved"],"%"))
   }
 }
 
@@ -146,4 +152,4 @@ shinyServer(function(input, output) {
   output$bmiStatus <- renderText({bmiStatus(bmi(input$weight, input$height))})
   output$dailyCalorie <- renderText({dailyCalorie(tdee(input$activityLevel, bmr(input$age, input$gender, input$weight, input$height)),bmi(input$weight, input$height))})
   output$progress <- renderPlot({progress(input$weight,minIdealWeight(input$height),maxIdealWeight(input$height))})
-  })
+})
