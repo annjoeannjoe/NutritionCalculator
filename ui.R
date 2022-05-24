@@ -34,10 +34,12 @@ shinyUI(fluidPage(
       
       h4("Your daily calorie should be"),
       verbatimTextOutput("dailyCalorie"),
-      h4("Your current progress"),
-      #verbatimTextOutput("progress"),
-      plotOutput("progress")
+
+      h4("Recommended macros:"),
+      plotOutput("macros"),
       
+      plotOutput("progress")
+
     )
   )
 ))
