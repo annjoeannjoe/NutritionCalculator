@@ -60,96 +60,144 @@ dailyCalorie <- function(tdee, bmi){
   }
 }
 
-progress <- function(weight, minIdealWeight, maxIdealWeight){
-  if(weight < minIdealWeight){
-    progress1 <- abs(((weight - minIdealWeight)/minIdealWeight)*100)
-    percentage1 <- 100-progress1
+macros <- function(bmi, dailyCalorie){
+  if(bmi<18.5){
+    carbsCalorie1 <- (55/100) * dailyCalorie
+    proteinCalorie1 <- (30/100) * dailyCalorie
+    fatCalorie1 <- (15/100) * dailyCalorie
     
-    data <- data.frame(category=c("Achieved", "Not Achieved"), count=c(percentage1, progress1))
+    df <- data.frame(value = c(carbsCalorie1, proteinCalorie1, fatCalorie1), 
+                     group = c("Carbohydrates", "Protein", "Fats"))
     
-    #compute fraction
-    data$fraction <- data$count / sum(data$count)
+    ggplot(df, aes(x = "", y = value, fill = group)) +
+      geom_col(color = "black") +
+      geom_label(aes(label = value),
+                 color = "white",
+                 position = position_stack(vjust = 0.5),
+                 show.legend = FALSE) +
+      coord_polar(theta = "y")
     
-    # compute the cumulative percentages (top of each rectangle)
-    data$ymax <- cumsum(data$fraction)
+  }else if(bmi>18.5 && bmi<24.9){
+    carbsCalorie2 <- (50/100) * dailyCalorie
+    proteinCalorie2 <- (30/100) * dailyCalorie
+    fatCalorie2 <- (20/100) * dailyCalorie
     
-    # compute percentage
-    data$percentage <- round(data$fraction*100, digits=2)
+    df <- data.frame(value = c(carbsCalorie2, proteinCalorie2, fatCalorie2), 
+                     group = c("Carbohydrates", "Protein", "Fats"))
     
+    ggplot(df, aes(x = "", y = value, fill = group)) +
+      geom_col(color = "black") +
+      geom_label(aes(label = value),
+                 color = "white",
+                 position = position_stack(vjust = 0.5),
+                 show.legend = FALSE) +
+      coord_polar(theta = "y")
     
-    # Compute the bottom of each rectangle
-    data$ymin <- c(0, head(data$ymax, n=-1))
+  }else if(bmi>24.9){
+    carbsCalorie3 <- (40/100) * dailyCalorie
+    proteinCalorie3 <- (30/100) * dailyCalorie
+    fatCalorie3 <- (30/100) * dailyCalorie
     
-    # Compute label position
-    data$labelPosition <- (data$ymax + data$ymin) / 2
-    
-    # Compute a good label
-    data$label <- paste0(data$percentage, "%")
-    
-    # colour for the chart
-    colour <- c("#0073C2FF","#EFC000FF")
-    
-    # Make the plot
-    ggplot(data, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=category)) +
-      geom_rect() + ggtitle("Progress to achieve ideal weight:")+
-      scale_fill_manual(values=colour) + # chart colour
-      coord_polar(theta="y") +
-      xlim(c(-4, 4)) +
-      theme_void() +
-      theme(legend.position = "none")+
-      theme(plot.title = element_text(size=28))+
-      annotate(geom='text', x=-4, y=0.25, size=13, colour="dark green", label=paste0(data$percentage[data$category=="Achieved"],"%"))
-    
-  }else if (weight > maxIdealWeight){
-    progress2 <- abs(((weight-maxIdealWeight)/maxIdealWeight)*100)
-    percentage2 <- 100-progress2
-    
-    data <- data.frame(category=c("Achieved", "Not Achieved"), count=c(percentage2, progress2))
-    
-    #compute fraction
-    data$fraction <- data$count / sum(data$count)
-    
-    # compute the cumulative percentages (top of each rectangle)
-    data$ymax <- cumsum(data$fraction)
-    
-    # compute percentage
-    data$percentage <- round(data$fraction*100, digits=2)
+    df <- data.frame(value = c(carbsCalorie3, proteinCalorie3, fatCalorie3), 
+                     group = c("Carbohydrates", "Protein", "Fats"))
     
     
-    # Compute the bottom of each rectangle
-    data$ymin <- c(0, head(data$ymax, n=-1))
-    
-    # Compute label position
-    data$labelPosition <- (data$ymax + data$ymin) / 2
-    
-    # Compute a good label
-    data$label <- paste0(data$percentage, "%")
-    
-    # colour for the chart
-    colour <- c("#0073C2FF","#EFC000FF")
-    
-    # Make the plot
-    ggplot(data, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=category)) +
-      geom_rect() + ggtitle("Progress to achieve ideal weight:")+
-      scale_fill_manual(values=colour) + # chart colour
-      coord_polar(theta="y") +
-      xlim(c(-4, 4)) +
-      theme_void() +
-      theme(legend.position = "none")+
-      theme(plot.title = element_text(size=28))+
-      annotate(geom='text', x=-4, y=0.25, size=13, colour="dark green", label=paste0(data$percentage[data$category=="Achieved"],"%"))
+    ggplot(df, aes(x = "", y = value, fill = group)) +
+      geom_col(color = "black") +
+      geom_label(aes(label = value),
+                 color = "white",
+                 position = position_stack(vjust = 0.5),
+                 show.legend = FALSE) +
+      coord_polar(theta = "y")
   }
 }
-
-
+  
+progress <- function(weight, minIdealWeight, maxIdealWeight){
+    if(weight < minIdealWeight){
+      progress1 <- abs(((weight - minIdealWeight)/minIdealWeight)*100)
+      percentage1 <- 100-progress1
+      
+      data <- data.frame(category=c("Achieved", "Not Achieved"), count=c(percentage1, progress1))
+      
+      #compute fraction
+      data$fraction <- data$count / sum(data$count)
+      
+      # compute the cumulative percentages (top of each rectangle)
+      data$ymax <- cumsum(data$fraction)
+      
+      # compute percentage
+      data$percentage <- round(data$fraction*100, digits=2)
+      
+      # Compute the bottom of each rectangle
+      data$ymin <- c(0, head(data$ymax, n=-1))
+      
+      # Compute label position
+      data$labelPosition <- (data$ymax + data$ymin) / 2
+      
+      # Compute a good label
+      data$label <- paste0(data$percentage, "%")
+      
+      # colour for the chart
+      colour <- c("#0073C2FF","#EFC000FF")
+      
+      # Make the plot
+      ggplot(data, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=category)) +
+        geom_rect() + ggtitle("Progress to achieve ideal weight:")+
+        scale_fill_manual(values=colour) + # chart colour
+        coord_polar(theta="y") +
+        xlim(c(-4, 4)) +
+        theme_void() +
+        theme(legend.position = "none")+
+        theme(plot.title = element_text(size=28))+
+        annotate(geom='text', x=-4, y=0.25, size=13, colour="dark green", label=paste0(data$percentage[data$category=="Achieved"],"%"))
+      
+    }else if (weight > maxIdealWeight){
+      progress2 <- abs(((weight-maxIdealWeight)/maxIdealWeight)*100)
+      percentage2 <- 100-progress2
+      
+      data <- data.frame(category=c("Achieved", "Not Achieved"), count=c(percentage2, progress2))
+      
+      #compute fraction
+      data$fraction <- data$count / sum(data$count)
+      
+      # compute the cumulative percentages (top of each rectangle)
+      data$ymax <- cumsum(data$fraction)
+      
+      # compute percentage
+      data$percentage <- round(data$fraction*100, digits=2)
+      
+      # Compute the bottom of each rectangle
+      data$ymin <- c(0, head(data$ymax, n=-1))
+      
+      # Compute label position
+      data$labelPosition <- (data$ymax + data$ymin) / 2
+      
+      # Compute a good label
+      data$label <- paste0(data$percentage, "%")
+      
+      # colour for the chart
+      colour <- c("#0073C2FF","#EFC000FF")
+      
+      # Make the plot
+      ggplot(data, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=category)) +
+        geom_rect() + ggtitle("Progress to achieve ideal weight:")+
+        scale_fill_manual(values=colour) + # chart colour
+        coord_polar(theta="y") +
+        xlim(c(-4, 4)) +
+        theme_void() +
+        theme(legend.position = "none")+
+        theme(plot.title = element_text(size=28))+
+        annotate(geom='text', x=-4, y=0.25, size=13, colour="dark green", label=paste0(data$percentage[data$category=="Achieved"],"%"))
+    }
+}
 
 shinyServer(function(input, output) {
-  
   output$bmi <- renderText({bmi(input$weight, input$height)})
   output$bmr <- renderText({bmr(input$age, input$gender, input$weight, input$height)})
   output$tdee <- renderText({tdee(input$activityLevel, bmr(input$age, input$gender, input$weight, input$height))})
   output$goalweight <- renderText({noquote(paste0(minIdealWeight(input$height), " to ", (maxIdealWeight(input$height))))})
   output$bmiStatus <- renderText({bmiStatus(bmi(input$weight, input$height))})
   output$dailyCalorie <- renderText({dailyCalorie(tdee(input$activityLevel, bmr(input$age, input$gender, input$weight, input$height)),bmi(input$weight, input$height))})
+  output$macros <- renderPlot({macros(bmi(input$weight, input$height),dailyCalorie(tdee(input$activityLevel, bmr(input$age, input$gender, input$weight, input$height)),bmi(input$weight, input$height)))})
   output$progress <- renderPlot({progress(input$weight,minIdealWeight(input$height),maxIdealWeight(input$height))})
-})
+  })
